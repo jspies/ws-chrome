@@ -2,35 +2,35 @@
 <html>
   <head>
     <title>WildStar Addon Manager for Beta</title>
-    <style>
-      body {
-        min-width: 357px;
-        overflow-x: hidden;
-      }
-
-      img {
-        margin: 5px;
-        border: 2px solid black;
-        vertical-align: middle;
-        width: 75px;
-        height: 75px;
-      }
-    </style>
+    <link rel="stylesheet" href="popup.css"></link>
 
     <script src="jquery.js"></script>
     <script src="popup.js"></script>
   </head>
   <body>
-    <h2>WildStar Addons</h2>
+    <div class="header">
+      <h2>WildStar Addons</h2>
 
-    <div class="prepop-messages">
-      <p>To use this you must have the beta forums up in your current tab and be logged in.</p>
-      <p>No addons found. Please go to the Addon UI Forum</p>
+      <div class="prepop-messages">
+        <p>To use this you must have the beta forums up in your current tab and be logged in.</p>
+        <p>No addons found. Please go to the Addon UI Forum</p>
+      </div>
+    </div>
+  
+    <form id="search-form" action="#">
+      <div id="search-term-wrapper">
+        <input type="text" name="filter" id="search-term" />
+        <button id="search-submit" class="search-submit">Search</button>
+      </div>
+    </form>
+    
+
+    <div class="postpop-messages">
+      Found <span id="num-addons">0</span> Addons
     </div>
 
-    <div id="addons">
-    </div>
+    <ul id="addons">
+    </ul>
     
   </body>
 </html>
-

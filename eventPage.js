@@ -19,3 +19,5 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   
   sendResponse({farewell: "goodbye"})
 });
+
+localStorage.removeItem("addons");
