@@ -2,23 +2,17 @@ var Extractor = {
   extract: function() {
     var self = this;
 
+    // clear existing
     chrome.runtime.sendMessage({newAddon: null, clear: true}, function(response) {});
 
+    // init variables
     this.addons = [];
     this.statusID = 'wscontrol-status-elementation';
-
     this.numPages = this.findNumPages(document);
     this.numAddonsFound = 0;
-
-    this.statusElement = $("<div style='"+ this.statusStyle() +"' id='"+ this.statusID +"'>WS Addon Control Searching for Addons <br/>Pages left: <span id='wsnumpagesleft'>" + this.numPagesLeft + "</span><br/>Addons found: <span id='wsnumaddonsfound'>0</span></div>")
-    this.closeButton = $('<div style="cursor:pointer;position:absolute;right:2px;bottom:2px;">CLOSE</div>');
-    this.closeButton.on("click", function() {
-      self.statusElement.remove();
-    });
-    this.statusElement.append(this.closeButton);
     
+    this.buildStatusElement();
     this.updateNumPagesLeft(this.numPages - 1);
-
     this.insertStatusElement();
 
     // parse the current page
@@ -26,6 +20,15 @@ var Extractor = {
     // follow page links
     this.parseNonActivePages(document);
     
+  },
+
+  buildStatusElement: function() {
+    this.statusElement = $("<div style='"+ this.statusStyle() +"' id='"+ this.statusID +"'>WS Addon Control Searching for Addons <br/>Pages left: <span id='wsnumpagesleft'>" + this.numPagesLeft + "</span><br/>Addons found: <span id='wsnumaddonsfound'>0</span></div>")
+    this.closeButton = $('<div style="cursor:pointer;position:absolute;right:2px;bottom:2px;">CLOSE</div>');
+    this.closeButton.on("click", function() {
+      self.statusElement.remove();
+    });
+    this.statusElement.append(this.closeButton);
   },
 
   statusStyle: function() {
@@ -52,10 +55,9 @@ var Extractor = {
         }
         
         $.get(url, function(response) {
-          addon.download = self.parseAddonPageForDownload(response);
+          addon.downloads = self.parseAddonPageForDownloads(response);
 
-          if (typeof(addon.download) != "undefined" && addon.download != null && addon.download != "") {
-            
+          if (addon.downloads.length > 0) {
             chrome.runtime.sendMessage({newAddon: addon}, function(response) {
               self.incrementAddonsFound();
             });
@@ -75,13 +77,27 @@ var Extractor = {
     this.statusElement.find('#wsnumpagesleft').text(num);
   },
 
-  parseAddonPageForDownload: function(response) {
-    var href;
-    $(response).find('a[title="Download attachment"]').each(function(dl_index) {
-      href = $(this).attr('href');
+  parseAddonPageForDownloads: function(response) {
+    var attachmentElement;
+    var downloads = [];
+
+    // first find the strong text. This is an attachment
+    var strongs = $(response).find('a[title="Download attachment"] strong');
+
+    strongs.each(function(index) {
+      download = {}
+      download.url = $(this).parent().attr('href');
+      download.title = $(this).text();
+
+      var dl_text = $(this).parent().siblings('span.desc.lighter').first().text();
+      if (match = dl_text.match(/([0-9]+)/)) {
+        download.num = match[1];
+      }
+
+      downloads.push(download);
     });
 
-    return href;
+    return downloads;
   },
 
   parseNonActivePages: function(htmlDocument) {

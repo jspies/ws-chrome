@@ -28,21 +28,33 @@ var WSControl = {
 
       $.each(this.addons, function(index) {
         var addon = this;
-        var element = $("<li class='addon'><h3>"+ addon.title +"</h3></li>");
+        var element = $("<li class='addon'><h3>"+ addon.title +"<div class='thread-link'></div></h3></li>");
         var linkHolder = $('<ul class="links"></ul>');
-        var downloadLink = $("<a href='"+ addon.download +"'>Download</a>");
+
+        for (var i = 0; i < addon.downloads.length; i++ ) {
+          var download = addon.downloads[i];
+          var downloadLink = $("<a href='"+ download.url +"'>Download "+ download.title +"</a>");
+
+          downloadLink.on("click", function(event) { 
+            self.downloadFile(download.url);
+            event.preventDefault();
+          });
+
+          var li = self.addListItem(linkHolder, downloadLink);
+          li.append($("<span> "+ download.num +" Downloads</span>"));
+        }
+
+        element.append(linkHolder);
+
         var pageLink = $("<a href='"+ addon.url +"'>Visit Thread</a>')");
-        downloadLink.on("click", function(event) { 
-          self.downloadFile(addon);
-          event.preventDefault();
-        });
+        
         pageLink.on("click", function(event) {
           chrome.tabs.create({url: $(this).attr('href')});
           event.preventDefault();
         });
-        self.addListItem(linkHolder, downloadLink);
-        self.addListItem(linkHolder, pageLink);
-        element.append(linkHolder);
+        element.find('.thread-link').append(pageLink);
+
+        
 
         // attach for later use
         self.addons[index].element = element;
@@ -62,9 +74,9 @@ var WSControl = {
     this.loadAddons();
   },
 
-  downloadFile: function(addon) {
+  downloadFile: function(url) {
     chrome.downloads.download({
-      url: addon.download
+      url: url
     }, function(downloadId) {
       chrome.downloads.show(downloadId);
     });
@@ -74,6 +86,7 @@ var WSControl = {
     var li = $("<li></li>");
     li.append(content);
     list.append(li);
+    return li;
   },
 
   attachSearchForm: function() {

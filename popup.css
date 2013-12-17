@@ -9,7 +9,17 @@ h2 {
   margin-top: 0;
 }
 
-.addon h3 {}
+.addon h3 {
+  position: relative;
+}
+
+.addon h3 .thread-link {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  font-size: 12px;
+}
 
 .addon ul.links {
   list-style: none;
@@ -21,6 +31,11 @@ h2 {
 .addon ul.links li {
   display: inline-block;
   margin-right: 20px;
+}
+
+.addon ul li span {
+  font-style: italic;
+  color: #aaa;
 }
 
 ul#addons {
@@ -46,6 +61,7 @@ ul#addons li.addon:nth-child(even) {
 
 #search-form {
   position: relative;
+  z-index: 10000;
   overflow: hidden;
   padding: 20px 0;
   background: #676767;
