@@ -4,6 +4,7 @@ var WSControl = {
     
     this.handleScroll();
     this.attachSearchForm();
+    this.currentSort = "name";
     this.reloadAddons();
   },
 
@@ -22,6 +23,8 @@ var WSControl = {
     var self = this;
 
     if (this.addons && this.addons.length > 0) {
+      $('#addons').html("");
+
       $('.prepop-messages').hide();
 
       $('#num-addons').text(this.addons.length)
@@ -33,7 +36,7 @@ var WSControl = {
 
         for (var i = 0; i < addon.downloads.length; i++ ) {
           var download = addon.downloads[i];
-          var downloadLink = $("<a href='"+ download.url +"'>Download "+ download.title +"</a>");
+          var downloadLink = $("<a href='"+ download.url +"'>"+ download.title +"</a>");
 
           downloadLink.on("click", function(event) { 
             self.downloadFile(download.url);
@@ -54,8 +57,6 @@ var WSControl = {
         });
         element.find('.thread-link').append(pageLink);
 
-        
-
         // attach for later use
         self.addons[index].element = element;
 
@@ -64,14 +65,38 @@ var WSControl = {
     }
   },
 
+  sortByName: function() {
+    this.addons.sort(function(a, b) {
+      return a.title > b.title ? 1 : -1;
+    });
+  },
+
+  sortByIndex: function() {
+    this.addons.sort(function(a, b) {
+      x = (a.pageIndex * 20) + a.positionOnPage;
+      y = (b.pageIndex * 20) + b.positionOnPage;
+      return x - y;
+    });
+  },
+
+  resortAddons: function() {
+    if (this.currentSort == "name") {
+      this.sortByName();
+    } else {
+      this.sortByIndex();
+    }
+    
+    this.loadAddons();
+  },
+
   reloadAddons: function() {
     try {
       this.addons = JSON.parse(localStorage["addons"]);  
     } catch(e) {
       this.addons = [];
     }
-    
-    this.loadAddons();
+
+    this.resortAddons();
   },
 
   downloadFile: function(url) {
@@ -96,6 +121,15 @@ var WSControl = {
       var term = $('input#search-term').val();
       self.filterOn(term);
     });
+
+    $('a.sort-by').on("click", function(e) {
+      e.preventDefault();
+      $('a.sort-by').removeClass("active");
+      $(this).addClass('active');
+      self.currentSort = $(this).data("sort-by");
+      console.log(self.currentSort)
+      self.resortAddons();
+    });
   },
 
   filterOn: function(term) {
@@ -104,7 +138,6 @@ var WSControl = {
     var self = this;
 
     $.each(this.addons, function(index) {
-      console.log(this)
       if (this.title.toLowerCase().indexOf(term.toLowerCase()) == -1) {
         self.addons[index].element.hide();
       } else {

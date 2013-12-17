@@ -16,7 +16,7 @@ var Extractor = {
     this.insertStatusElement();
 
     // parse the current page
-    this.parseListingPage(document);
+    this.parseListingPage(document, 1);
     // follow page links
     this.parseNonActivePages(document);
     
@@ -39,7 +39,7 @@ var Extractor = {
     $('body').prepend(this.statusElement);
   },
 
-  parseListingPage: function(htmlDocument) {
+  parseListingPage: function(htmlDocument, pageIndex) {
     var self = this;
     $(htmlDocument).find('a.topic_title').each(function(index) {
 
@@ -51,7 +51,9 @@ var Extractor = {
         var url = $(this).attr('href');
         var addon = {
           title: match[1].trim(),
-          url: url
+          url: url,
+          pageIndex: pageIndex,
+          positionOnPage: index
         }
         
         $.get(url, function(response) {
@@ -113,7 +115,7 @@ var Extractor = {
       var url = pageHref.replace(/page-[0-9]+/, "page-" + i);
 
       $.get(url, function(response) {
-        self.parseListingPage(response);
+        self.parseListingPage(response, i);
         self.updateNumPagesLeft(self.numPagesLeft - 1);
       });
     };

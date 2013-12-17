@@ -17,9 +17,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       }
       
       existingAddons[existingAddons.length] = request.newAddon;
-      existingAddons.sort(function(a, b) {
-        return a.title > b.title ? 1 : -1;
-      });
       localStorage["addons"] = JSON.stringify(existingAddons);
     }
   }

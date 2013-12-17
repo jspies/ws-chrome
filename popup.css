@@ -29,8 +29,7 @@ h2 {
 }
 
 .addon ul.links li {
-  display: inline-block;
-  margin-right: 20px;
+  display: block;
 }
 
 .addon ul li span {
@@ -71,6 +70,31 @@ ul#addons li.addon:nth-child(even) {
   padding: 4px 10px;
   width: 400px;
   top: 0;
+}
+
+#search-form .sorters {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#search-form .sorters li {
+  display: inline-block;
+  width: 184px;
+  padding: 10px 0;
+  font-size: 12px;
+  text-align: center;
+  color: white;
+}
+
+#search-form .sorters li a {
+  display: inline-block;
+  color: white;
+  text-decoration: none;
+}
+
+#search-form .sorters li a.active {
+  font-weight: bold;
 }
 
 #search-term-wrapper {
