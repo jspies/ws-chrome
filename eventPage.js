@@ -1,20 +1,27 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (sender.tab) {
     // from a content script, probably the forums :)
-    var existingAddons;
-    if (localStorage["addons"]) {
-      try {
-        existingAddons = JSON.parse(localStorage["addons"]);
-      } catch(e) {
+
+    if (request.clear == true) {
+      localStorage.removeItem("addons");
+    } else {
+      var existingAddons;
+      if (localStorage["addons"]) {
+        try {
+          existingAddons = JSON.parse(localStorage["addons"]);
+        } catch(e) {
+          existingAddons = [];
+        }
+      } else {
         existingAddons = [];
       }
-    } else {
-      existingAddons = [];
+      
+      existingAddons[existingAddons.length] = request.newAddon;
+      existingAddons.sort(function(a, b) {
+        return a.title > b.title ? 1 : -1;
+      });
+      localStorage["addons"] = JSON.stringify(existingAddons);
     }
-    
-    existingAddons[existingAddons.length] = request.newAddon;
-    localStorage["addons"] = JSON.stringify(existingAddons);
-
   }
   
   sendResponse({farewell: "goodbye"})

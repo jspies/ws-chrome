@@ -9,14 +9,12 @@ h2 {
   margin-top: 0;
 }
 
-.addon h3 {
-  border-bottom: 1px solid #e3e3e3;
-}
+.addon h3 {}
 
 .addon ul.links {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 20px;
   width: 100%;
 }
 
@@ -32,11 +30,18 @@ ul#addons {
 }
 
 ul#addons {
-  padding: 0 10px;
+  padding: 0;
 }
 
-ul#addons li:nth-child(even) {
-  background: #fcfcfc;
+ul#addons li.addon {
+  padding: 5px 8px 22px 8px;
+  margin: 0 -10px;
+  font-size: 12px;
+  border-top: 1px solid #e0e0ef;
+}
+
+ul#addons li.addon:nth-child(even) {
+  background: #f0f0ff;
 }
 
 #search-form {
