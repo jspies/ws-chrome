@@ -10,6 +10,7 @@ var Extractor = {
     this.statusID = 'wscontrol-status-elementation';
     this.numPages = this.findNumPages(document);
     this.numAddonsFound = 0;
+    this.numLibrariesFound = 0;
     
     this.buildStatusElement();
     this.updateNumPagesLeft(this.numPages - 1);
@@ -66,12 +67,38 @@ var Extractor = {
           }
         });
       }
+
+      // now Libraries: bad copy/pasta for now
+      if (match = postTitle.match(/^\[Library\](.*)/i)) {
+        // we have an addon
+        var url = $(this).attr('href');
+        var lib = {
+          title: match[1].trim(),
+          url: url,
+          pageIndex: pageIndex,
+          positionOnPage: index
+        }
+        
+        $.get(url, function(response) {
+          lib.downloads = self.parseAddonPageForDownloads(response);
+
+          if (lib.downloads.length > 0) {
+            chrome.runtime.sendMessage({newLibrary: lib}, function(response) {
+              self.incrementLibrariesFound();
+            });
+          }
+        });
+      }
     });
   },
 
   incrementAddonsFound: function() {
     this.numAddonsFound += 1;
     $('#wsnumaddonsfound').text(this.numAddonsFound);
+  },
+
+  incrementLibrariesFound: function() {
+    this.numLibrariesFound += 1;
   },
 
   updateNumPagesLeft: function(num) {

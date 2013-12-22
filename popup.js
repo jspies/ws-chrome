@@ -19,32 +19,34 @@ var WSControl = {
     });
   },
 
-  loadAddons: function() {
+  loadAddons: function(addons) {
     var self = this;
 
-    if (this.addons && this.addons.length > 0) {
+    if (addons && addons.length > 0) {
       $('#addons').html("");
 
       $('.prepop-messages').hide();
 
-      $('#num-addons').text(this.addons.length)
+      $('#num-addons').text(addons.length)
 
-      $.each(this.addons, function(index) {
+      $.each(addons, function(index) {
         var addon = this;
         var element = $("<li class='addon'><h3>"+ addon.title +"<div class='thread-link'></div></h3></li>");
         var linkHolder = $('<ul class="links"></ul>');
 
-        for (var i = 0; i < addon.downloads.length; i++ ) {
-          var download = addon.downloads[i];
-          var downloadLink = $("<a href='"+ download.url +"'>"+ download.title +"</a>");
+        if (addon.downloads) {
+          for (var i = 0; i < addon.downloads.length; i++ ) {
+            var download = addon.downloads[i];
+            var downloadLink = $("<a href='"+ download.url +"'>"+ download.title +"</a>");
 
-          downloadLink.on("click", function(event) { 
-            self.downloadFile(download.url);
-            event.preventDefault();
-          });
+            downloadLink.on("click", function(event) { 
+              self.downloadFile(download.url);
+              event.preventDefault();
+            });
 
-          var li = self.addListItem(linkHolder, downloadLink);
-          li.append($("<span> "+ download.num +" Downloads</span>"));
+            var li = self.addListItem(linkHolder, downloadLink);
+            li.append($("<span> "+ download.num +" Downloads</span>"));
+          }
         }
 
         element.append(linkHolder);
@@ -86,14 +88,16 @@ var WSControl = {
       this.sortByIndex();
     }
     
-    this.loadAddons();
+    this.loadAddons(this.addons);
   },
 
   reloadAddons: function() {
     try {
-      this.addons = JSON.parse(localStorage["addons"]);  
+      this.addons = JSON.parse(localStorage["addons"]);
+      this.libraries = JSON.parse(localStorage["libraries"]);
     } catch(e) {
       this.addons = [];
+      this.libraries = [];
     }
 
     this.resortAddons();
@@ -127,9 +131,23 @@ var WSControl = {
       $('a.sort-by').removeClass("active");
       $(this).addClass('active');
       self.currentSort = $(this).data("sort-by");
-      console.log(self.currentSort)
       self.resortAddons();
     });
+
+    $('a#library-toggle').on("click", function(e) {
+      e.preventDefault();
+      if ($(this).text() == "View Libraries") {
+        self.showLibraries();  
+        $(this).text("View Addons");
+      } else {
+        self.loadAddons(self.addons);
+        $(this).text("View Libraries");
+      }
+    });
+  },
+
+  showLibraries: function() {
+    this.loadAddons(this.libraries);
   },
 
   filterOn: function(term) {
