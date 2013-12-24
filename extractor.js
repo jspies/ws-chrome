@@ -24,6 +24,7 @@ var Extractor = {
   },
 
   buildStatusElement: function() {
+    var self = this;
     this.statusElement = $("<div style='"+ this.statusStyle() +"' id='"+ this.statusID +"'>WS Addon Control Searching for Addons <br/>Pages left: <span id='wsnumpagesleft'>" + this.numPagesLeft + "</span><br/>Addons found: <span id='wsnumaddonsfound'>0</span></div>")
     this.closeButton = $('<div style="cursor:pointer;position:absolute;right:2px;bottom:2px;">CLOSE</div>');
     this.closeButton.on("click", function() {
